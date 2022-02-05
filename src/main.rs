@@ -2,6 +2,7 @@
 use crate::config::{ADDRESS, ADDRESS_PORT};
 use crate::logger::start_input_handler;
 use crate::network::network_server_start;
+use crate::mods::initialize_mods;
 use fern::colors::Color;
 use std::error::Error;
 use std::process;
@@ -22,6 +23,7 @@ extern crate lazy_static;
 pub mod config;
 pub mod network;
 pub mod utils;
+pub mod mods;
 
 // Main function of application
 fn main() {
@@ -33,6 +35,10 @@ fn main() {
         eprintln!("Failed to initialize logger: {}", err);
         process::exit(1);
     }
+    
+    // I'm not sure where to place this.
+    // But I think mods should be able to override even the game's protocol.
+    initialize_mods();
     
     // Creating channel for multithreading communication with main's thread and network's thread
     let (tx, rx) = channel::<bool>();

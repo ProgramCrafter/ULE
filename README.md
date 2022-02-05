@@ -4,6 +4,9 @@ This's server core fully written in Rust-Lang and using more custom code
 for best perfomance and controlling.
 ```
 
+> Fork by ProgramCrafter
+> - adding support for mods
+
 If you want to [contribute - i'm exists on Patreon.](https://www.patreon.com/user?u=64366641)
 
 What's libraries using for server's core:

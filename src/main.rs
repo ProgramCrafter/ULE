@@ -26,14 +26,17 @@ pub mod utils;
 // Main function of application
 fn main() {
     let start = SystemTime::now();
+    
     // Initialize logger
-    println!("Starting ULE v1.0.0...");
+    println!("Starting ULE v0.1.1...");
     if let Err(err) = logger::setup_logger() {
         eprintln!("Failed to initialize logger: {}", err);
         process::exit(1);
     }
+    
     // Creating channel for multithreading communication with main's thread and network's thread
     let (tx, rx) = channel::<bool>();
+    
     // Generate server's address and make it accessible with thread safe
     let address = Arc::new(String::from(format!(
         "{}:{}",
@@ -52,6 +55,7 @@ fn main() {
             }
         }
     });
+    
     // Wait for status from server's network
     if rx.recv().unwrap_or(false) {
         // If Server successful started

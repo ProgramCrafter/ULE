@@ -1,13 +1,14 @@
 [package]
 name = "ule"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 publish = true
 authors = [
-    "Distemi <distemi.bot@mail.ru>"
+    "Distemi <distemi.bot@mail.ru>",
+    "ProgramCrafter <pythonhunter146@gmail.com>"
 ]
 homepage = "https://github.com/Distemi/ULE"
-repository = "https://github.com/Distemi/ULE"
+repository = "https://github.com/ProgramCrafter/ULE"
 readme = "README.md"
 
 [dependencies]

@@ -1,4 +1,5 @@
 use crate::config::{MODS_ENABLED, MODS_PATH};
+use crate::mods::vm::Machine;
 
 pub fn initialize_mods() -> std::io::Result<()> {
     if !MODS_ENABLED {
@@ -26,4 +27,10 @@ pub fn initialize_mods() -> std::io::Result<()> {
         
         Ok(())
     }
+}
+
+pub fn start_mods() {
+    let machine = Machine::new("");
+    let mut machine = machine.execute_threaded().join().unwrap();
+    info!("Output from mod virtual machine: {:?}", machine.read_str_from_vm());
 }

@@ -1,4 +1,4 @@
-use crate::config::PROTOCOL_VERSION;
+use crate::config::{PROTOCOL_VERSION, FAVICON};
 use crate::network::proto::packet_read::PacketReader;
 use crate::network::proto::packet_write::PacketWriter;
 use crate::network::network_client::NetworkClient;
@@ -12,6 +12,7 @@ pub struct ListPingResponse {
     pub version: ListPingResponseVersion,
     pub players: ListPingResponsePlayers,
     pub description: ChatMessage,
+    pub favicon: String
 }
 
 #[derive(Debug, Serialize)]
@@ -51,6 +52,7 @@ pub fn create_server_list_ping_response() -> Vec<u8> {
             },
             // Some clients can read colors and so on without convert into JSON
             description: ChatMessage::str("&a&lHello!"),
+            favicon: String::from("data:image/png;base64,".to_owned() + FAVICON)
         })
         .unwrap(),
     );

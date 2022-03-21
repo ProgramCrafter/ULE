@@ -26,6 +26,8 @@ impl PacketReader for Vec<u8> {
 
     // Read a single byte as i8 ( 8-Bit Integer )
     fn get_i8(&mut self) -> i8 {
+        panic!("packet_read.rs:PacketReader  TODO: check index: maybe we should remove 0, not 1?");
+        
         self.remove(1) as i8
     }
 

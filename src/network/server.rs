@@ -95,23 +95,34 @@ pub fn network_server_start(address: String, tx: &Sender<bool>) -> std::io::Resu
                         NetworkClient {
                             stream: connection,
                             conn_type: HANDSHAKING,
+                            unused_buffer: None
                         },
                     );
                 },
-                // Handing event from client
+                // Handling event from client
                 token => {
-                    // Handing event by connection's stage
+                    // Handling event by connection stage
                     let done = if let Some(connection) = connections.get_mut(&token) {
-                        let m = match &connection.conn_type {
-                            HANDSHAKING => handshaking,
-                            _ => status_handler,
-                        };
-                        // Trying to handing
-                        m(connection, &event).unwrap_or(false)
+                        let mut first_loop: bool = true;
+                        let mut is_done: bool = false;
+                        
+                        while connection.unused_buffer.is_some() || first_loop {
+                            let m = match &connection.conn_type {
+                                HANDSHAKING => handshaking,
+                                _ => status_handler,
+                            };
+                            if m(connection, &event).unwrap_or(false) {
+                                is_done = true;
+                                break;
+                            }
+                            first_loop = false;
+                        }
+                        
+                        is_done
                     } else {
                         false
                     };
-                    // If needs to close connection - removing from list, unregister and close connection's stream
+                    // If need to close connection - removing from list, unregistering and closing connection stream
                     if done {
                         if let Some(mut connection) = connections.remove(&token) {
                             poll.registry().deregister(&mut connection.stream)?;

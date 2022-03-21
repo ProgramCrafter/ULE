@@ -74,12 +74,10 @@ pub fn read_status_packet(client: &mut NetworkClient) -> SResult<()> {
         ));
     }
     
-    // Unwrapping read data (Some(p)) from line 61 back
+    info!("Reading status packet");
+    
+    // Unwrapping read data (Some(p)) from line 65 back
     let mut p: Vec<u8> = p.unwrap();
-    
-    print!("real packet length: {} (", p.len());
-    
-    for v in p.iter() {print!("{},", v);}
     
     // Trying to read Length and PacketID from packet
     // (on status stage PacketID must be equal to 0x00 or 0x01)
@@ -87,10 +85,21 @@ pub fn read_status_packet(client: &mut NetworkClient) -> SResult<()> {
     
     match packet_id {
         0x00 => { // Ping List
-            // drop(bytes); - will be executed automatically
+            info!("Ping list");
             client.stream.write_all(&*create_server_list_ping_response());
+            print!("Ping list data: ");
+            for v in create_server_list_ping_response().iter() {
+                print!("{}", *v as char);
+            }
+            println!();
+            print!("As numbers: ");
+            for v in create_server_list_ping_response().iter() {
+                print!("{},", v);
+            }
+            println!();
         }
         0x01 => { // Ping-Pong
+            info!("Ping-pong");
             let ping_data = p.get_i64();
             
             client.stream.write_all(b"\x01");

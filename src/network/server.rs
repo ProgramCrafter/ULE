@@ -88,7 +88,7 @@ pub fn network_server_start(address: String, tx: &Sender<bool>) -> std::io::Resu
                         &mut connection,
                         token,
                         Interest::READABLE.add(Interest::WRITABLE),
-                    )?;
+                    )?; warn!("New request");
                     // Pushing connection into connection's list
                     connections.insert(
                         token,
@@ -103,19 +103,20 @@ pub fn network_server_start(address: String, tx: &Sender<bool>) -> std::io::Resu
                 token => {
                     // Handling event by connection stage
                     let done = if let Some(connection) = connections.get_mut(&token) {
-                        let mut first_loop: bool = true;
+                        let mut loops: usize = 0;
                         let mut is_done: bool = false;
                         
-                        while connection.unused_buffer.is_some() || first_loop {
+                        while (connection.unused_buffer.is_some() || loops == 0) && loops < 10 {
                             let m = match &connection.conn_type {
-                                HANDSHAKING => handshaking,
-                                _ => status_handler,
+                                HANDSHAKING => {info!("Processing request: HANDSHAKING"); handshaking},
+                                _ => {info!("Processing request: STATUS"); status_handler},
                             };
-                            if m(connection, &event).unwrap_or(false) {
-                                is_done = true;
-                                break;
+                            match m(connection, &event) {
+                                Ok(true) => {is_done = true; break;},
+                                Ok(false) => {},
+                                _ => {break;}
                             }
-                            first_loop = false;
+                            loops += 1;
                         }
                         
                         is_done
@@ -126,7 +127,7 @@ pub fn network_server_start(address: String, tx: &Sender<bool>) -> std::io::Resu
                     if done {
                         if let Some(mut connection) = connections.remove(&token) {
                             poll.registry().deregister(&mut connection.stream)?;
-                            connections.remove(&token);
+                            connections.remove(&token); warn!("Del request");
                         }
                     }
                 }

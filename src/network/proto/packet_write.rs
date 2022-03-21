@@ -39,26 +39,22 @@ impl PacketWriter for Vec<u8> {
 
     // Writing bytes as VarInt
     fn write_varint(&mut self, mut value: i32) {
-        // Bytes buffer
         let mut buf = vec![0u8; 1];
-        // Byte's length
         let mut n = 0;
-        // Converts value to bytes
         loop {
-            // Break if it's limit
+            // Small int is pushed without 0x80 flag
             if value <= 127 || n >= 8 {
                 break;
             }
-            // Pushing a byte to buffer
             buf.insert(n, (0x80 | (value & 0x7F)) as u8);
-            // Moving value's bits on 7
+            
             value >>= 7;
-            value -= 1;
             n += 1;
         }
-        // Pushing byte, because it lower that 256(<256)
+        // Pushing last 7-bit value
         buf.insert(n, value as u8);
         n += 1;
+        
         // Pushing converted bytes into byte's buffer
         self.extend_from_slice(&buf.as_slice()[..n])
     }
